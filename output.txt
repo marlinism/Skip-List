@@ -1,0 +1,314 @@
+Sun 21 Nov 2021 10:50:26 PM PST
+Linux csslab1h 4.19.0-17-amd64 #1 SMP Debian 4.19.194-3 (2021-07-18) x86_64 GNU/Linux
+uid=1181269(tbanh) gid=2121181269(tbanh) groups=2121181269(tbanh),605559(lab-access)
+=====================================================
+1. Compiles without warnings with -Wall -Wextra flags
+=====================================================
+=====================================================
+2. Runs and produces correct output
+=====================================================
+4: 9
+3: 9
+2: 5-->9
+1: 3-->5-->7-->9
+0: 1-->3-->5-->7-->9
+
+7 ? true
+3 ? true
+-100 ? false
+100 ? false
+4: 9
+3: 9
+2: 9
+1: 3-->7-->9
+0: 1-->3-->7-->9
+
+Done.
+=====================================================
+3. clang-tidy warnings are fixed
+=====================================================
+12223 warnings generated.
+24507 warnings generated.
+Suppressed 24508 warnings (24507 in non-user code, 1 NOLINT).
+Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+=====================================================
+4. clang-format does not find any formatting issues
+=====================================================
+Running clang-format on ./main.cpp
+Running clang-format on ./skiplist.cpp
+102,105c102,105
+<     SNode* currNode = head -> forward[d];
+<     SNode* nextNode = nullptr;
+<     while(currNode != tail) {
+<       nextNode = currNode -> forward[d];
+---
+>     SNode *currNode = head->forward[d];
+>     SNode *nextNode = nullptr;
+>     while (currNode != tail) {
+>       nextNode = currNode->forward[d];
+=====================================================
+5. No memory leaks using g++
+=====================================================
+=====================================================
+6. No memory leaks using valgrind, look for "definitely lost" 
+=====================================================
+==140307== Memcheck, a memory error detector
+==140307== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==140307== Using Valgrind-3.14.0 and LibVEX; rerun with -h for copyright info
+==140307== Command: ./a.out
+==140307== Parent PID: 140133
+==140307== 
+==140307== 
+==140307== HEAP SUMMARY:
+==140307==     in use at exit: 0 bytes in 0 blocks
+==140307==   total heap usage: 43 allocs, 43 frees, 77,916 bytes allocated
+==140307== 
+==140307== All heap blocks were freed -- no leaks are possible
+==140307== 
+==140307== For counts of detected and suppressed errors, rerun with: -v
+==140307== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+=====================================================
+7. Tests have full code coverage
+=====================================================
+File '/home/NETID/tbanh/2021au342d-p4-skiplist-marlinism/main.cpp':
+Name                        Regions    Miss   Cover     Lines    Miss   Cover
+-----------------------------------------------------------------------------
+test1()                           1       0 100.00%        21       0 100.00%
+main                              1       0 100.00%         7       0 100.00%
+-----------------------------------------------------------------------------
+TOTAL                             2       0 100.00%        28       0 100.00%
+
+File '/home/NETID/tbanh/2021au342d-p4-skiplist-marlinism/skiplist.cpp':
+Name                                                           Regions    Miss   Cover     Lines    Miss   Cover
+----------------------------------------------------------------------------------------------------------------
+operator<<(std::ostream&, SkipList const&)                          10       0 100.00%        16       0 100.00%
+SNode::SNode(int)                                                    1       0 100.00%         1       0 100.00%
+SkipList::SkipList(int, int)                                         4       0 100.00%         9       0 100.00%
+SkipList::shouldInsertAtHigher() const                               1       0 100.00%         3       0 100.00%
+SkipList::add(std::vector<int, std::allocator<int> > const&)         4       0 100.00%         8       0 100.00%
+SkipList::add(int)                                                  17       0 100.00%        36       0 100.00%
+SkipList::~SkipList()                                                6       0 100.00%        14       0 100.00%
+SkipList::remove(int)                                               17       0 100.00%        25       0 100.00%
+SkipList::containsSNode(int) const                                  11       0 100.00%        12       0 100.00%
+SkipList::contains(int) const                                        8       0 100.00%         9       0 100.00%
+----------------------------------------------------------------------------------------------------------------
+TOTAL                                                               79       0 100.00%       133       0 100.00%
+/home/NETID/tbanh/2021au342d-p4-skiplist-marlinism/main.cpp:
+    1|       |#include <cassert>
+    2|       |#include <iostream>
+    3|       |
+    4|       |#include "skiplist.h"
+    5|       |
+    6|       |using namespace std;
+    7|       |
+    8|      1|void test1() {
+    9|      1|  // setting seed for easy testing
+   10|      1|  srand(10000);
+   11|      1|  SkipList skp(5, 80);
+   12|      1|  cout << boolalpha;
+   13|      1|  skp.add(3);
+   14|      1|  skp.add(5);
+   15|      1|  skp.add(vector<int>{1, 7, 9});
+   16|      1|  // cannot add existing
+   17|      1|  assert(!skp.add(vector<int>{1, 7}));
+   18|      1|  cout << skp << endl;
+   19|      1|  cout << "7 ? " << skp.contains(7) << endl;
+   20|      1|  cout << "3 ? " << skp.contains(3) << endl;
+   21|      1|  cout << "-100 ? " << skp.contains(-100) << endl;
+   22|      1|  cout << "100 ? " << skp.contains(100) << endl;
+   23|      1|  bool result = skp.remove(5);
+   24|      1|  assert(result);
+   25|      1|  result = skp.remove(5);
+   26|      1|  assert(!result);
+   27|      1|  cout << skp << endl;
+   28|      1|}
+   29|       |
+   30|      1|int main() {
+   31|      1|
+   32|      1|  test1();
+   33|      1|
+   34|      1|  cout << "Done." << endl;
+   35|      1|  return 0;
+   36|      1|}
+
+/home/NETID/tbanh/2021au342d-p4-skiplist-marlinism/skiplist.cpp:
+    1|       |//
+    2|       |// Created by Yusuf Pisan on 4/26/18.
+    3|       |//
+    4|       |
+    5|       |#include <cassert>
+    6|       |#include <climits>
+    7|       |#include <cstdlib>
+    8|       |#include <iostream>
+    9|       |
+   10|       |#include "skiplist.h"
+   11|       |
+   12|       |using namespace std;
+   13|       |
+   14|      2|ostream &operator<<(ostream &out, const SkipList &skip) {
+   15|     12|  for (int d = skip.maxLevel - 1; d >= 0; d--) {
+   16|     10|    out << d << ": ";
+   17|     10|    auto *curr = skip.head->forward[d];
+   18|     10|    if (curr != skip.tail) {
+   19|     10|      out << curr->value;
+   20|     10|      curr = curr->forward[d];
+   21|     10|    }
+   22|     23|    while (curr != nullptr && curr != skip.tail) {
+   23|     13|      out << "-->" << curr->value;
+   24|     13|      curr = curr->forward[d];
+   25|     13|    }
+   26|     10|    out << endl;
+   27|     10|  }
+   28|      2|  return out;
+   29|      2|}
+   30|       |
+   31|      7|SNode::SNode(int value) : value{value} {}
+   32|       |
+   33|       |// // how many forward/backward pointers it has
+   34|       |// int SNode::height() const { return 0; }
+   35|       |
+   36|       |// // increase the number of forward/backward pointers it has
+   37|       |// void SNode::increaseHeight() {}
+   38|       |
+   39|       |SkipList::SkipList(int maxLevel, int probability)
+   40|      1|    : maxLevel{maxLevel}, probability{probability} {
+   41|      1|  assert(maxLevel > 0 && probability >= 0 && probability < 100);
+   42|      1|  head = new SNode(INT_MIN);
+   43|      1|  tail = new SNode(INT_MAX);
+   44|      6|  for (int i = 0; i < maxLevel; i++) {
+   45|      5|    head->forward.push_back(tail);
+   46|      5|    tail->backward.push_back(head);
+   47|      5|  }
+   48|      1|}
+   49|       |
+   50|     12|bool SkipList::shouldInsertAtHigher() const {
+   51|     12|  return rand() % 100 < probability;
+   52|     12|}
+   53|       |
+   54|      2|bool SkipList::add(const vector<int> &values) {
+   55|      2|  bool result = false;
+   56|      2|  // NOLINTNEXTLINE
+   57|      7|  for (int value = 0; value < values.size(); value++) {
+   58|      5|    result = add(values[value]);
+   59|      5|  }
+   60|      2|  return result;
+   61|      2|}
+   62|       |
+   63|      7|bool SkipList::add(int value) {
+   64|      7|
+   65|      7|  // check if duplicate
+   66|      7|  SNode *temp = containsSNode(value);
+   67|      7|  if (temp != nullptr) {
+   68|      2|    return false;
+   69|      2|  }
+   70|      5|
+   71|      5|  // create node
+   72|      5|  auto *insertedNode = new SNode(value);
+   73|      5|  insertedNode->forward.push_back(nullptr);
+   74|      5|  insertedNode->backward.push_back(nullptr);
+   75|      5|
+   76|     13|  while (insertedNode->forward.size() < maxLevel && shouldInsertAtHigher()) {
+   77|      8|    insertedNode->forward.push_back(nullptr);
+   78|      8|    insertedNode->backward.push_back(nullptr);
+   79|      8|  }
+   80|      5|
+   81|      5|  SNode *iter = head;
+   82|     30|  for (int level = maxLevel - 1; level >= 0; level--) {
+   83|     29|    while (iter->forward[level] != tail &&
+   84|     29|           iter->forward[level]->value < value) {
+   85|      4|      iter = iter->forward[level];
+   86|      4|    }
+   87|     25|
+   88|     25|    if (level < insertedNode->forward.size()) {
+   89|     13|      // Connect iter with insertedNode, connect inserted_column with nextIter
+   90|     13|      SNode *nextIter = iter->forward[level];
+   91|     13|      iter->forward[level] = insertedNode;
+   92|     13|      nextIter->backward[level] = insertedNode;
+   93|     13|      insertedNode->backward[level] = iter;
+   94|     13|      insertedNode->forward[level] = nextIter;
+   95|     13|    }
+   96|     25|  }
+   97|      5|  return true;
+   98|      5|}
+   99|       |
+  100|      1|SkipList::~SkipList() {
+  101|      6|  for (int d = maxLevel - 1; d >= 0; d--) {
+  102|      5|    SNode* currNode = head -> forward[d];
+  103|      5|    SNode* nextNode = nullptr;
+  104|      9|    while(currNode != tail) {
+  105|      4|      nextNode = currNode -> forward[d];
+  106|      4|      remove(currNode->value);
+  107|      4|      currNode = nextNode;
+  108|      4|    }
+  109|      5|  }
+  110|      1|  // need to delete individual nodes
+  111|      1|  delete head;
+  112|      1|  delete tail;
+  113|      1|}
+  114|       |
+  115|      6|bool SkipList::remove(int data) {
+  116|      6|  // check if the value is existed
+  117|      6|  SNode *erasedNode = containsSNode(data);
+  118|      6|  if (erasedNode == nullptr || erasedNode == tail ||
+  119|      6|      erasedNode->value != data) {
+  120|      1|    return false;
+  121|      1|  }
+  122|      5|  // check to remove
+  123|      5|  SNode *iter = head;
+  124|     30|  for (int level = maxLevel - 1; level >= 0; level--) {
+  125|     30|    while (iter->forward[level] != tail &&
+  126|     30|           iter->forward[level]->value <= data) {
+  127|      5|      iter = iter->forward[level];
+  128|      5|    }
+  129|     25|    if (iter == erasedNode) {
+  130|     13|      // Connect previousIter with nextIter
+  131|     13|      SNode *previousIter = iter->backward[level],
+  132|     13|            *nextIter = iter->forward[level];
+  133|     13|      previousIter->forward[level] = nextIter;
+  134|     13|      nextIter->backward[level] = previousIter;
+  135|     13|    }
+  136|     25|  }
+  137|      5|  delete erasedNode;
+  138|      5|  return true;
+  139|      5|}
+  140|       |
+  141|       |// get the node that would be before this data
+  142|       |// at level-0
+  143|       |// vector<SNode *> SkipList::getBeforeNodes(int data) const {
+  144|       |//   vector<SNode *> v(maxLevel);
+  145|       |//   return v;
+  146|       |// }
+  147|       |
+  148|     13|SNode *SkipList::containsSNode(int data) const {
+  149|     13|  SNode *iter = head;
+  150|     78|  for (int level = maxLevel - 1; level >= 0; level--) {
+  151|     76|    while (iter->forward[level] != tail && iter->forward[level]->value < data) {
+  152|     11|      iter = iter->forward[level];
+  153|     11|    }
+  154|     65|  }
+  155|     13|  if (iter->forward[0]->value == data) {
+  156|      7|    return iter->forward[0];
+  157|      7|  }
+  158|      6|  return nullptr;
+  159|      6|}
+  160|       |
+  161|      4|bool SkipList::contains(int data) const {
+  162|      4|  SNode *iter = head;
+  163|     24|  for (int level = maxLevel - 1; level >= 0; level--) {
+  164|     23|    while (iter->forward[level] != tail && iter->forward[level]->value < data) {
+  165|      3|      iter = iter->forward[level];
+  166|      3|    }
+  167|     20|  }
+  168|      4|  return iter->forward[0]->value == data;
+  169|      4|}
+  170|       |
+  171|       |// void SkipList::connect2AtLevel(SNode *a, SNode *b, int level) {}
+  172|       |
+  173|       |// void SkipList::connect3AtLevel(SNode *a, SNode *b, SNode *c, int level) {}
+
+Sun 21 Nov 2021 10:50:43 PM PST
+=====================================================
+To create an output.txt file with all the output from this script
+Run the below command
+      ./create-output.sh > output.txt 2>&1 
+=====================================================
